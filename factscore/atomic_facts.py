@@ -23,7 +23,7 @@ class AtomicFactGenerator(object):
         self.is_bio = True
         self.demon_path = os.path.join(demon_dir, "demons.json" if self.is_bio else "demons_complex.json")
 
-        self.openai_lm = OpenAIModel("InstructGPT", cache_file=gpt3_cache_file, key_path=key_path)
+        self.openai_lm = OpenAIModel("ChatGPT", cache_file=gpt3_cache_file, key_path=key_path)
 
         # get the demos
         with open(self.demon_path, 'r') as f:
@@ -155,9 +155,9 @@ def best_demos(query, bm25, demons_sents, k):
 def text_to_sentences(text):
     sentences = text.split("- ")[1:]
     sentences = [sent.strip()[:-1] if sent.strip()[-1] == '\n' else sent.strip() for sent in sentences]
-    if len(sentences) > 0: 
+    if len(sentences) > 0:
         if sentences[-1][-1] != '.':
-            sentences[-1] = sentences[-1] + '.' 
+            sentences[-1] = sentences[-1] + '.'
     else:
         sentences = []
     return sentences
@@ -222,7 +222,7 @@ def detect_entities(text, nlp):
                 for token in ent.text.split():
                     if is_date(token):
                         _add_to_entities(token)
-        
+
     for new_ent in extract_numeric_values(text):
         if not np.any([new_ent in ent for ent in entities]):
             entities.add(new_ent)

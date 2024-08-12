@@ -104,18 +104,19 @@ class FactScorer(object):
     def get_score(self,
                   topics,
                   generations,
+                  contexts,
                   gamma=10,
                   atomic_facts=None,
                   knowledge_source=None,
                   verbose=False):
-        if knowledge_source is None:
-            # use the default knowledge source
-            knowledge_source = "enwiki-20230401"
+        # if knowledge_source is None:
+        #     # use the default knowledge source
+        #     knowledge_source = "enwiki-20230401"
 
-        if knowledge_source not in self.retrieval:
-            self.register_knowledge_source(knowledge_source)
+        # if knowledge_source not in self.retrieval:
+        #     self.register_knowledge_source(knowledge_source)
 
-        if type(topics)==type(generations)==str:
+        if type(topics)==len(generations)==str:
             topics = [topics]
             generations = [generations]
         else:
@@ -141,7 +142,7 @@ class FactScorer(object):
                 topics = tqdm(topics)
 
             atomic_facts = []
-            for topic, gen in zip(topics, generations):
+            for topic, gen in tqdm(zip(topics, generations), desc="Generating atomic facts"):
                 # optionally, first detect if the response is abstained
                 response_abstained = is_response_abstained(gen, self.abstain_detection_type)
                 if response_abstained:
@@ -165,9 +166,9 @@ class FactScorer(object):
         if "ChatGPT" in self.model_name:
             # estimate the total cost of response generation
             total_words = 0
-            for topic, generation, facts in zip(topics, generations, atomic_facts):
+            for topic, generation, facts, context in tqdm(zip(topics, generations, atomic_facts, contexts), desc="Estimating cost of response generation"):
                 if facts is not None:
-                    total_words += self._get_score(topic, generation, facts, knowledge_source, cost_estimate=self.cost_estimate)
+                    total_words += self._get_score(topic, generation, facts, context, knowledge_source, cost_estimate=self.cost_estimate)
 
             self.print_cost_estimates(total_words, task="factscore evaluation", model="gpt-3.5-turbo")
 
@@ -177,18 +178,18 @@ class FactScorer(object):
         scores = []
         init_scores = []
         decisions = []
-        for topic, generation, facts in zip(topics, generations, atomic_facts):
+        for topic, generation, facts, context in tqdm(zip(topics, generations, atomic_facts, contexts), desc="Processing topics"):
             if facts is None:
                 decisions.append(None)
             else:
-                decision = self._get_score(topic, generation, facts, knowledge_source)
+                decision = self._get_score(topic, generation, facts, context, knowledge_source)
                 score = np.mean([d["is_supported"] for d in decision])
-                
+
                 if gamma:
                     init_scores.append(score)
                     penalty = 1.0 if len(facts)>gamma else np.exp(1-gamma/len(facts))
                     score = penalty * score
-                
+
                 decisions.append(decision)
                 scores.append(score)
                 if len(scores) % 10 == 0:
@@ -203,21 +204,21 @@ class FactScorer(object):
 
         if gamma:
             out["init_score"] = np.mean(init_scores)
-        
+
         return out
 
-    def _get_score(self, topic, generation, atomic_facts, knowledge_source, cost_estimate=None):
+    def _get_score(self, topic, generation, atomic_facts, context, knowledge_source, cost_estimate=None):
         decisions = []
         total_words = 0
         for atom in atomic_facts:
             atom = atom.strip()
             if self.lm:
-                passages = self.retrieval[knowledge_source].get_passages(topic, atom, k=5)
-                definition = "Answer the question about {} based on the given context.\n\n".format(topic)
-                context = ""
-                for psg_idx, psg in enumerate(reversed(passages)):
-                    context += "Title: {}\nText: {}\n\n".format(psg["title"], psg["text"].replace("<s>", "").replace("</s>", ""))
-                definition += context.strip()
+                # passages = self.retrieval[knowledge_source].get_passages(topic, atom, k=5)
+                # definition = "Answer the question about {} based on the given context.\n\n".format(topic)
+                # context = ""
+                # for psg_idx, psg in enumerate(reversed(passages)):
+                #     context += "Title: {}\nText: {}\n\n".format(psg["title"], psg["text"].replace("<s>", "").replace("</s>", ""))
+                definition = context.strip()
                 if not definition[-1] in string.punctuation:
                     definition += "."
                 prompt = "{}\n\nInput: {} True or False?\nOutput:".format(definition.strip(), atom.strip())
@@ -308,7 +309,7 @@ if __name__ == '__main__':
                         action="store_true")
     parser.add_argument('--verbose',
                         action="store_true",
-                        help="for printing out the progress bar")    
+                        help="for printing out the progress bar")
     parser.add_argument('--print_rate_limit_error',
                         action="store_true",
                         help="for printing out rate limit error when using OpenAI keys")
