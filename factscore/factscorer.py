@@ -105,7 +105,7 @@ class FactScorer(object):
                   topics,
                   generations,
                   contexts,
-                  gamma=10,
+                  gamma=0,
                   atomic_facts=None,
                   knowledge_source=None,
                   verbose=False):
@@ -132,11 +132,11 @@ class FactScorer(object):
                                                         gpt3_cache_file=os.path.join(self.cache_dir, "InstructGPT.pkl"))
 
             # estimate the total cost of atomic fact generation
-            total_words = 0
-            for gen in generations:
-                total_words += self.af_generator.run(gen, cost_estimate=self.cost_estimate)
+            # total_words = 0
+            # for gen in generations:
+            #     total_words += self.af_generator.run(gen, cost_estimate=self.cost_estimate)
 
-            self.print_cost_estimates(total_words, task="atomic fact generation", model="davinci-003")
+            # self.print_cost_estimates(total_words, task="atomic fact generation", model="davinci-003")
 
             if verbose:
                 topics = tqdm(topics)
@@ -163,14 +163,14 @@ class FactScorer(object):
 
         respond_ratio = np.mean([facts is not None for facts in atomic_facts])
 
-        if "ChatGPT" in self.model_name:
-            # estimate the total cost of response generation
-            total_words = 0
-            for topic, generation, facts, context in tqdm(zip(topics, generations, atomic_facts, contexts), desc="Estimating cost of response generation"):
-                if facts is not None:
-                    total_words += self._get_score(topic, generation, facts, context, knowledge_source, cost_estimate=self.cost_estimate)
+        # if "ChatGPT" in self.model_name:
+        #     # estimate the total cost of response generation
+        #     total_words = 0
+        #     for topic, generation, facts, context in tqdm(zip(topics, generations, atomic_facts, contexts), desc="Estimating cost of response generation"):
+        #         if facts is not None:
+        #             total_words += self._get_score(topic, generation, facts, context, knowledge_source, cost_estimate=self.cost_estimate)
 
-            self.print_cost_estimates(total_words, task="factscore evaluation", model="gpt-3.5-turbo")
+        #     self.print_cost_estimates(total_words, task="factscore evaluation", model="gpt-3.5-turbo")
 
         if verbose:
             topics = tqdm(topics)

@@ -16,11 +16,14 @@ class OpenAIModel(LM):
         super().__init__(cache_file)
 
     def load_model(self):
-        # load api key
-        key_path = self.key_path
-        assert os.path.exists(key_path), f"Please place your OpenAI APT Key in {key_path}."
-        with open(key_path, 'r') as f:
-            api_key = f.readline()
+        # Try to load the API key from the file
+        if os.path.exists(self.key_path):
+            with open(self.key_path, 'r') as f:
+                api_key = f.readline().strip()
+        else:
+            # Fall back to using the environment variable
+            api_key = os.getenv('OPENAI_API_KEY')
+            assert api_key is not None, "API key not found. Please set it in the environment variable 'OPENAI_API_KEY'."
         openai.api_key = api_key.strip()
         self.model = self.model_name
 
