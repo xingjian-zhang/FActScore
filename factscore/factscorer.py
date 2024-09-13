@@ -23,10 +23,12 @@ class FactScorer(object):
                  openai_key="api.key",
                  cost_estimate="consider_cache",
                  abstain_detection_type=None,
-                 batch_size=256):
+                 batch_size=256,
+                 strictness="moderate"):
         assert model_name in ["retrieval+llama", "retrieval+llama+npm", "retrieval+ChatGPT", "npm", "retrieval+ChatGPT+npm"]
         self.model_name = model_name
 
+        self.strictness = strictness
         self.db = {}
         self.retrieval = {}
         self.npm = {}
@@ -221,7 +223,15 @@ class FactScorer(object):
                 definition = context.strip()
                 if not definition[-1] in string.punctuation:
                     definition += "."
-                prompt = "{}\n\nInput: {} True or False?\nOutput:".format(definition.strip(), atom.strip())
+                if self.strictness == "moderate":
+                    criterion = "The fact can be considered relevant if it is either directly mentioned or reasonably paraphrased in the target text. Answer True if the core meaning of the fact is captured, even if some details differ, and False if the fact is significantly different or unsupported."
+                elif self.strictness == "strict":
+                    criterion = "The fact must be clearly and explicitly supported in the target text.  The fact must be stated with no ambiguity.  Answer True if the target text fully and directly supports the fact, otherwise answer False."
+                elif self.strictness == "loose":
+                    criterion = "The fact can be loosely supported or related to the target text. Even if it is not explicitly stated, answer True as long as there is a reasonable connection to the fact. Answer False only if there is no connection or the fact is contradicted."
+                else:
+                    criterion = "True or False?"
+                prompt = "{}\n\nInput: {}\n{} \nOutput:".format(definition.strip(), atom.strip(), criterion)
 
                 if cost_estimate:
                     if cost_estimate == "consider_cache" and (prompt.strip() + "_0") not in self.lm.cache_dict:
@@ -229,9 +239,10 @@ class FactScorer(object):
                     elif cost_estimate == "ignore_cache":
                         total_words += len(prompt.split())
                     continue
-
+                # print(f"prompt:{prompt}")
                 output = self.lm.generate(prompt)
-
+                # print(f"output:{output}")
+                # breakpoint()
                 if type(output[1])==np.ndarray:
                     # when logits are available
                     logits = np.array(output[1])

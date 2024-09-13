@@ -71,3 +71,8 @@ poetry.lock
 
 acl-publication-info.74k.parquet
 roberta_stopwords.txt.1
+
+# data
+out/
+score/
+train_dataset.json

@@ -21,7 +21,7 @@ class AtomicFactGenerator(object):
     def __init__(self, key_path, demon_dir, gpt3_cache_file=None):
         self.nlp = spacy.load("en_core_web_sm")
         self.is_bio = True
-        self.demon_path = os.path.join(demon_dir, "demons.json" if self.is_bio else "demons_complex.json")
+        self.demon_path = os.path.join(demon_dir, "key_idea_demos.json" if self.is_bio else "demons_complex.json")
 
         self.openai_lm = OpenAIModel("ChatGPT", cache_file=gpt3_cache_file, key_path=key_path)
 
@@ -44,22 +44,24 @@ class AtomicFactGenerator(object):
     def get_atomic_facts_from_paragraph(self, paragraphs, cost_estimate=None):
         sentences = []
         para_breaks = []
-        for para_idx, paragraph in enumerate(paragraphs):
-            if para_idx > 0 :
-                para_breaks.append(len(sentences))
+        sentences = paragraphs
 
-            initials = detect_initials(paragraph)
+        # for para_idx, paragraph in enumerate(paragraphs):
+        #     if para_idx > 0 :
+        #         para_breaks.append(len(sentences))
 
-            curr_sentences = sent_tokenize(paragraph)
-            curr_sentences_2 = sent_tokenize(paragraph)
+        #     initials = detect_initials(paragraph)
 
-            curr_sentences = fix_sentence_splitter(curr_sentences, initials)
-            curr_sentences_2 = fix_sentence_splitter(curr_sentences_2, initials)
+        #     curr_sentences = sent_tokenize(paragraph)
+        #     curr_sentences_2 = sent_tokenize(paragraph)
 
-            # checking this, just to ensure the crediability of the sentence splitter fixing algorithm
-            assert curr_sentences == curr_sentences_2, (paragraph, curr_sentences, curr_sentences_2)
+        #     # curr_sentences = fix_sentence_splitter(paragraph, initials)
+        #     # curr_sentences_2 = fix_sentence_splitter(paragraph, initials)
 
-            sentences += curr_sentences
+        #     # checking this, just to ensure the crediability of the sentence splitter fixing algorithm
+        #     assert curr_sentences == curr_sentences_2, (paragraph, curr_sentences, curr_sentences_2)
+
+        #     sentences += curr_sentences
 
         atoms_or_estimate = self.get_init_atomic_facts_from_sentence([sent for i, sent in enumerate(sentences) if not (not self.is_bio and ( \
                             (i==0 and (sent.startswith("Sure") or sent.startswith("Here are"))) or \
@@ -112,17 +114,17 @@ class AtomicFactGenerator(object):
             prompt = ""
 
             for i in range(n):
-                prompt = prompt + "Please breakdown the following sentence into independent facts: {}\n".format(list(demons.keys())[i])
+                prompt = prompt + "Please breakdown the following sentence into independent facts, where the subject of each fact is preferably an abstract noun: {}\n".format(list(demons.keys())[i])
                 for fact in demons[list(demons.keys())[i]]:
                     prompt = prompt + "- {}\n".format(fact)
                 prompt = prompt + "\n"
 
             for match in top_machings:
-                prompt = prompt + "Please breakdown the following sentence into independent facts: {}\n".format(match)
+                prompt = prompt + "Please breakdown the following sentence into independent facts, where the subject of each fact is preferably an abstract noun: {}\n".format(match)
                 for fact in demons[match]:
                     prompt = prompt + "- {}\n".format(fact)
                 prompt = prompt + "\n"
-            prompt = prompt + "Please breakdown the following sentence into independent facts: {}\n".format(sentence)
+            prompt = prompt + "Please breakdown the following sentence into independent facts, where the subject of each fact is preferably an abstract noun: {}\n".format(sentence)
             prompts.append(prompt)
             prompt_to_sent[prompt] = sentence
 

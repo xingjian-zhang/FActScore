@@ -22,16 +22,19 @@ class FActScore:
        Form Text Generation](https://arxiv.org/abs/2305.14251)
 
     """
-    def __init__(self, cache_dir="./cache/factscore", log_dir="./logs/factscore"):
+    def __init__(self, cache_dir="./cache/factscore", log_dir="./logs/factscore",strictness="moderate",case=0, file="plagiarism_200.json"):
         self.cache_dir = cache_dir
         self.log_dir = log_dir
+        self.strictness = strictness
+        self.case = case
+        self.file = file
 
     def _compute(self, predictions: List[str], references: List[str]) -> Dict[str, Any]:
         """Compute the precision of the atomic facts extracted from the
         predictions compared to the atomic facts in the references."""
         hash_key = hashlib.md5("\n".join(predictions + references).encode()).hexdigest()
         cache_dir = os.path.join(self.cache_dir, hash_key)
-        fs = FactScorer(cache_dir=cache_dir)
+        fs = FactScorer(cache_dir=cache_dir, strictness=self.strictness)
         dummy_topics = [None] * len(predictions)
         scores = fs.get_score(dummy_topics, predictions, references, verbose=False, gamma=0)
         return scores
@@ -69,7 +72,7 @@ class FActScore:
         # Dump the output to a json file.
         if self.log_dir is not None:
             os.makedirs(self.log_dir, exist_ok=True)
-            log_path = os.path.join(self.log_dir, hash_key + ".json")
+            log_path = os.path.join(self.log_dir, f"{self.strictness}_{self.case}_{self.file}" + ".json")
             with open(log_path, "w") as f:
                 json.dump({
                     "predictions": predictions,
