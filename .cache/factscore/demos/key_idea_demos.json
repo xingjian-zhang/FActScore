@@ -1,0 +1,102 @@
+{
+    "The authors propose the Multilingual MMT task and provide an effective baseline model LVP-M3 using visual prompts to support translations between different languages. ": [
+        "The authors propose a new task.",
+        "The task is named Multilingual MMT task.",
+        "The task is multilingual.",
+        "The authors provide a baseline model.",
+        "The baseline model is named LVP-M3.",
+        "The model is effective.",
+        "The model uses visual prompts.",
+        "The model supports translations between different languages."
+    ],
+    "The authors propose a novel deep clustering method named PartItion Confidence mAximisation (PICA). PICA is established on the idea of learning the most semantically plausible data separation by maximising the global partition confidence of clustering solution": [
+        "The authors propose a novel method.",
+        "The method is a deep clustering method.",
+        "The method is named PartItion Confidence mAximisation (PICA).",
+        "The method is established on an idea.",
+        "The idea is about learning data separation.",
+        "The data separation is semantically plausible.",
+        "The method works by maximising something.",
+        "The method maximises the global partition confidence.",
+        "The method maximises the global partition confidence of clustering solution."
+    ],
+    "The authors introduce BetaProbLog, a new PLP language designed specifically to model epistemic uncertainty.": [
+        "The authors introduce a new language.",
+        "New language is named BetaProbLog.",
+        "New language is a type of PLP lannguage.",
+        "New language is specifically designed to model epistemic uncertainty."
+    ],
+    "The paper proposes WalkingVibe, a solution which applies unobtrusive vibrotactile feedback for VR walking experiences to both improve realism and reduce VR sickness and discomfort.": [
+        "The paper propose a solution.",
+        "The name of solution is WalkingVibe.",
+        "The solution applies unobtrusive vibrotactile feedback.",
+        "The solution is designed for VR walking experiences.",
+        "The solution is aimed to improve realism.",
+        "The solution is aimed to reduce VR sickness and discomfort."
+    ],
+    "This new task and model leverage the fact that the image modality, unlike languages, has no boundaries.": [
+        "The authors propose a new task and model",
+        "The task leverages a fact.",
+        "The model leverages a fact.",
+        "The fact is about image modality.",
+        "The image modality has no boundaries.",
+        "The image modality is unlike languages."
+    ],
+    "A novel Domain-Switch Learning (DSL) framework is proposed under a hypothesis that if a deep model quickly generalizes itself to different domains (using few samples) during training, it will maintain such domain generalization capacity for testing.": [
+        "A novel framework is proposed",
+        "The framework is named Domain-Switch Learning (DSL)",
+        "The framework operates under a hypothesis.",
+        "The hypothesis states that a deep model generalizes itself to different domains.",
+        "The generalization happens during training.",
+        "The model generalizes using few samples.",
+        "The model maintains such domain generalization capacity",
+        "The mode maintains domain generalization capacity for testing."
+    ],
+    "The authors propose a new VOS architecture comprised of a light-weight target appearance model learned during the inference stage for a coarse yet robust target segmentation and a segmentation model trained offline to process these coarse scores into high-quality segmentation masks.": [
+        "The authors propose a new VOS architecture.",
+        "New architecture is comprised of a model ",
+        "The model is a light-weight model.",
+        "The model is a target appearance model.",
+        "The model is learned during the inference stage.",
+        "The model is for  a coarse yet robust target segmentation.",
+        "The architecture also includes a segmentation model.",
+        "The segmentation model is trained offline.",
+        "The segmentation model processes coarse scores.",
+        "\tThe segmentation model converts coarse scores into high-quality segmentation masks."
+    ],
+    "The authors propose a 'HRO', a hybrid framework that integrates both memory-augmented recurrent and one-shot representation forecasting strategies to address the limitations faced by the recursive prediction models.": [
+        "The authors propose a hybird framework.",
+        "The framework is named 'HRO'.",
+        "New framework is a hybird framework",
+        "New framework integrates memory-augmented recurrent ",
+        "New framework integrates one-shot representation forecasting strategies.",
+        "New framework can address the limitations faced by the recursive prediction models."
+    ],
+    "The authors propose that facial behavior can be used as a surrogate measurement for specific states of mind, and they aim to predict brainwaves from face videos, which is formulated as an inverse problem of the underlying stochastic process.": [
+        "The authors propose that facial behavior.",
+        "Facial behavior can be used as a surrogate measurement.",
+        "It is for specific states of mind.",
+        "The authors aim to predict brainwaves from face videos",
+        "It is formulated as an inverse proble",
+        "The problem related to the underlying stochastic process."
+    ],
+    "The authors propose to combine perceptual inference and memory retrieval into a single mathematical framework through a variational inference formulation of auto-associative memories.": [
+        "The authors propose to combine two processes into a framework.",
+        "The authors propose to combine perceptual inference.",
+        "The authors propose to combine memory retrieval.",
+        "The framework is a single mathematical framework.",
+        "The framework is based on variational inference.",
+        "The framework uses a formulation of variational inference.",
+        "The formulation applies to auto-associative memories."
+    ],
+    "The authors propose RareGAN, a synthesis of three ideas: extending conditional GANs to use labeled and unlabeled data for better generalization, an active learning approach that requests the most useful labels, and a weighted loss function to favor learning the rare class.": [
+        "The authors propose RareGAN.",
+        "RareGAN is a synthesis of three ideas.",
+        "The first idea is to extend conditional GANs.",
+        "Conditional GANs are extended to use labeled and unlabeled data for better generalization.",
+        "The second idea is an active learning approach.",
+        "The active learning approach requests the most useful labels.",
+        "The third idea is a weighted loss function.",
+        "The weighted loss function favors learning the rare class."
+    ]
+}
