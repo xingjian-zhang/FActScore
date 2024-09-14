@@ -62,7 +62,6 @@ class AtomicFactGenerator(object):
         #     assert curr_sentences == curr_sentences_2, (paragraph, curr_sentences, curr_sentences_2)
 
         #     sentences += curr_sentences
-
         atoms_or_estimate = self.get_init_atomic_facts_from_sentence([sent for i, sent in enumerate(sentences) if not (not self.is_bio and ( \
                             (i==0 and (sent.startswith("Sure") or sent.startswith("Here are"))) or \
                             (i==len(sentences)-1 and (sent.startswith("Please") or sent.startswith("I hope") or sent.startswith("Here are")))))], cost_estimate=cost_estimate)
@@ -143,7 +142,6 @@ class AtomicFactGenerator(object):
             for key, value in demons.items():
                 if key not in atoms:
                     atoms[key] = value
-
             return atoms
 
 
@@ -156,7 +154,9 @@ def best_demos(query, bm25, demons_sents, k):
 # transform InstructGPT output into sentences
 def text_to_sentences(text):
     sentences = text.split("- ")[1:]
-    sentences = [sent.strip()[:-1] if sent.strip()[-1] == '\n' else sent.strip() for sent in sentences]
+    if not sentences:
+        sentences = re.split(r'\d+\.\s*', text)[1:]
+    sentences = [sent.strip()[:-1] if sent.strip() and sent.strip()[-1] == '\n' else sent.strip() for sent in sentences if sent.strip()]
     if len(sentences) > 0:
         if sentences[-1][-1] != '.':
             sentences[-1] = sentences[-1] + '.'

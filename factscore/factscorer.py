@@ -198,7 +198,6 @@ class FactScorer(object):
                     self.save_cache()
 
         self.save_cache()
-
         out = {"score": np.mean(scores),
                "respond_ratio": respond_ratio,
                "decisions": decisions,

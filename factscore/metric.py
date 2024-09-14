@@ -22,12 +22,11 @@ class FActScore:
        Form Text Generation](https://arxiv.org/abs/2305.14251)
 
     """
-    def __init__(self, cache_dir="./cache/factscore", log_dir="./logs/factscore",strictness="moderate",case=0, file="plagiarism_200.json"):
+    def __init__(self, cache_dir="./cache/factscore", log_dir="./logs/factscore2",strictness="moderate", name="plagiarism_200"):
         self.cache_dir = cache_dir
         self.log_dir = log_dir
         self.strictness = strictness
-        self.case = case
-        self.file = file
+        self.name = name
 
     def _compute(self, predictions: List[str], references: List[str]) -> Dict[str, Any]:
         """Compute the precision of the atomic facts extracted from the
@@ -54,32 +53,39 @@ class FActScore:
             Dict[str, Any]: A dictionary containing the `precision`, `recall`, and
                 `f1` score.
         """
-        hash_key = hashlib.md5("\n".join(predictions + references).encode()).hexdigest()
-        # Compute precision of atomic facts in the predictions.
-        precision_out = self._compute(predictions, references)
-        precision = float(np.mean(precision_out["score"]))
-        # Compute recall of atomic facts in the references.
-        # This is equivalent to computing the precision of atomic facts in the
-        # references.
-        recall_out = self._compute(references, predictions)
-        recall = float(np.mean(recall_out["score"]))
-        # Compute the F1 score.
-        if precision + recall == 0:
-            f1 = 0.0
-        else:
-            f1 = 2 * precision * recall / (precision + recall)
+        results =[]
+        for i, (prediction, reference) in enumerate(zip(predictions, references)):
+            prediction = [prediction]
+            reference = [reference]
+            # hash_key = hashlib.md5("\n".join(prediction + reference).encode()).hexdigest()
+            # Compute precision of atomic facts in the predictions.
+            precision_out = self._compute(prediction, reference)
+            precision = float(np.mean(precision_out["score"]))
+            # Compute recall of atomic facts in the references.
+            # This is equivalent to computing the precision of atomic facts in the
+            # references.
+            recall_out = self._compute(reference, prediction)
+            recall = float(np.mean(recall_out["score"]))
+            # Compute the F1 score.
+            if precision + recall == 0:
+                f1 = 0.0
+            else:
+                f1 = 2 * precision * recall / (precision + recall)
 
-        # Dump the output to a json file.
-        if self.log_dir is not None:
-            os.makedirs(self.log_dir, exist_ok=True)
-            log_path = os.path.join(self.log_dir, f"{self.strictness}_{self.case}_{self.file}" + ".json")
-            with open(log_path, "w") as f:
-                json.dump({
-                    "predictions": predictions,
-                    "references": references,
-                    "precision": precision_out,
-                    "recall": recall_out,
-                    "f1": f1
-                }, f, indent=4)
+            rst = {
+                "case_id": i,
+                "prediction": prediction,
+                "reference": reference,
+                "precision": precision_out,
+                "recall": recall_out,
+                "f1": f1
+            }
+            results.append(rst)
+            # Dump the output to a json file.
+            if self.log_dir is not None:
+                os.makedirs(self.log_dir, exist_ok=True)
+                log_path = os.path.join(self.log_dir, f"{self.strictness}_{self.name}" + ".jsonl")
+                with open(log_path, "a") as f:
+                    f.write(json.dumps(rst) + "\n")
 
-        return {"precision": precision, "recall": recall, "f1": f1}
+        return results
